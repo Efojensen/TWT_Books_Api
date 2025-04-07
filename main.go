@@ -65,9 +65,36 @@ func getBookById(id string) (*book, error) {
 	return nil, errors.New("book not found")
 }
 
+func checkoutBook(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPatch {
+		json.NewEncoder(w).Encode(map[string]string {
+			"error" : "wrong request type",
+		})
+		return
+	}
+
+	queryParams := r.URL.Query()
+	id := queryParams.Get("id")
+
+	book, err := getBookById(id)
+	w.Header().Set("Content-type", "application/json")
+
+	if err != nil {
+		json.NewEncoder(w).Encode(map[string]string {
+			"error" : "book not found",
+		})
+		return
+	}
+
+	book.Quantity -= 1
+
+	json.NewEncoder(w).Encode(book)
+}
+
 func main() {
 	http.HandleFunc("/books", getAllBooks)
 	http.HandleFunc("/books/{id}", getBook)
+	http.HandleFunc("/checkout", checkoutBook)
 	fmt.Println("Server running on localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
