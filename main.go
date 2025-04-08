@@ -96,5 +96,12 @@ func main() {
 	http.HandleFunc("/books/{id}", getBook)
 	http.HandleFunc("/checkout", checkoutBook)
 	fmt.Println("Server running on localhost:8080")
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
 	http.ListenAndServe(":8080", nil)
 }
